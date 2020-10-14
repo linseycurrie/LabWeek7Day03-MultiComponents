@@ -1,19 +1,69 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h1>Characters</h1>
+    <div>
+      
+      <character-search :selectedCharacter="selectedCharacter" :characters="characters"></character-search>
+      <select v-model="selectedCharacter">
+        <option value="" disabled>Selected Character</option>
+        <option v-for="(character, index) in characters" :key="index" :value="character">{{character.name}}</option>
+      </select>
+
+      <!-- <character-list :characters="characters"></character-list> -->
+      <character-detail :selectedCharacter="selectedCharacter"></character-detail>
+      
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import CharacterDetail from './components/CharacterDetail.vue'
+import {eventBus} from './main.js'
+import CharacterList from './components/CharacterList.vue'
+import CharacterSearch from './components/CharacterSearch.vue'
 
 export default {
   name: 'App',
+  data(){
+    return {
+      characters: [],
+      selectedCharacter: null,
+      foundCharacter: ""
+    }
+  },
+
+  mounted(){
+    fetch('https://rickandmortyapi.com/api/character/')
+    .then(response => response.json())
+    .then(data => this.characters = data.results)
+
+
+    eventBus.$on('character-selected', (character) => {
+      this.selectedCharacter = character;
+    })
+
+    // console.log(this.characterNames);
+  },
+
+  computed: {
+    
+    
+  },
+
+
   components: {
-    HelloWorld
-  }
+    "character-list": CharacterList,
+    "character-detail": CharacterDetail,
+    "character-search": CharacterSearch,
+  },
+
+  
+    
 }
+
+  
+
+// }
 </script>
 
 <style>
